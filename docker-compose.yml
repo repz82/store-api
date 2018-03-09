@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  store.api:
+    image: storeapi
+    build:
+      context: .
+      dockerfile: Store.Api\Dockerfile
