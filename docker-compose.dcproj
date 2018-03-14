@@ -8,6 +8,9 @@
     <DockerServiceUrl>http://{ServiceIPAddress}</DockerServiceUrl>
     <DockerServiceName>store.api</DockerServiceName>
   </PropertyGroup>
+  <PropertyGroup>
+    <DockerLaunchBrowser>true</DockerLaunchBrowser>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
