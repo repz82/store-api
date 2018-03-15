@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Store.Domain.StoreContext.Handlers;
 using Store.Domain.StoreContext.Repositories;
 using Store.Infra.StoreContext.DataContext;
 using Store.Infra.StoreContext.Repositories;
 using System.IO;
+using System.Text;
 
 namespace Store.Api
 {
@@ -27,17 +29,20 @@ namespace Store.Api
 
             Configuration = builder.Build();
 
-            var domain = $"https://{Configuration["Auth0:Domain"]}/";
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }).AddJwtBearer(options =>
-            {
-                options.Authority = domain;
-                options.Audience = Configuration["Auth0:ApiIdentifier"];
-            });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
 
             services.AddMvc();
             services.AddResponseCompression();
@@ -46,6 +51,8 @@ namespace Store.Api
 
             services.AddScoped<StoreDataContext, StoreDataContext>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<UserHandler, UserHandler>();
         }
 

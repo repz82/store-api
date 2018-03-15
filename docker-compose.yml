@@ -6,13 +6,13 @@ services:
     environment:
         SA_PASSWORD: "A2C.NetMS"
         ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
   store.api:
     image: storeapi
     build:
       context: .
       dockerfile: Store.Api\Dockerfile
-    depends_on: 
-      "db"
     depends_on:
       - "db"
     environment:
