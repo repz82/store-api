@@ -7,7 +7,7 @@ services:
         SA_PASSWORD: "A2C.NetMS"
         ACCEPT_EULA: "Y"
     ports:
-      - "1433:1433"
+      - "1401:1433"
   store.api:
     image: storeapi
     build:
